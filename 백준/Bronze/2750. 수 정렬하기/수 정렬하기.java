@@ -24,8 +24,14 @@ public class Main {
             }
         }
 
+        StringBuilder sb = new StringBuilder();
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         for (int i : arr) {
-            System.out.println(i);
+            sb.append(i + "\n");
         }
+
+        bw.write(sb.toString());
+        bw.flush();
+        bw.close();
     }
 }
