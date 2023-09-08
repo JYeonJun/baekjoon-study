@@ -1,70 +1,84 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Main {
 
-    static ArrayList<Node>[] graph;
-    static boolean[] visited;
-    static int[] result;
+    public static int v;
+    public static int start;
+    public static List<Node>[] arrayList;
 
     public static void main(String[] args) throws IOException {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
         StringTokenizer st = new StringTokenizer(br.readLine());
 
-        int V = Integer.parseInt(st.nextToken());
-        int E = Integer.parseInt(st.nextToken());
-        int K = Integer.parseInt(br.readLine());
 
-        graph = new ArrayList[V + 1];
-        for (int i = 0; i < graph.length; i++) {
-            graph[i] = new ArrayList<>();
-        }
+        v = Integer.parseInt(st.nextToken()); // 노드 개수
+        int e = Integer.parseInt(st.nextToken()); // 간선 개수
+        start = Integer.parseInt(br.readLine()); // 시작 정점
 
-        result = new int[V + 1];
-        for (int i = 1; i < graph.length; i++) {
-            if (i != K) {
-                result[i] = Integer.MAX_VALUE;
-            } else {
-                result[i] = 0;
+        arrayList = new ArrayList[v + 1];
+        int[] weights = new int[v + 1];
+
+        for (int i = 1; i < v + 1; i++) {
+            if (i != start) {
+                weights[i] = Integer.MAX_VALUE;
             }
         }
 
-        visited = new boolean[V + 1];
-        visited[K] = true;
-
-        for (int i = 0; i < E; i++) {
-            st = new StringTokenizer(br.readLine());
-            int start = Integer.parseInt(st.nextToken());
-            int end = Integer.parseInt(st.nextToken());
-            int weight = Integer.parseInt(st.nextToken());
-
-            graph[start].add(new Node(end, weight));
+        for (int i = 1; i < v + 1; i++) {
+            arrayList[i] = new ArrayList<Node>();
         }
 
-        Queue<Integer> que = new LinkedList<>();
-        que.add(K);
-        while (!que.isEmpty()) {
-            Integer now = que.poll();
+        for (int i = 0; i < e; i++) {
+            st = new StringTokenizer(br.readLine());
 
-            for (int i = 0; i < graph[now].size(); i++) {
-                Node node = graph[now].get(i);
-                int next = node.getNum();
-                result[next] = Math.min(result[next], result[now] + node.getWeight());
+            int from = Integer.parseInt(st.nextToken());
+            int to = Integer.parseInt(st.nextToken());
+            int w = Integer.parseInt(st.nextToken());
+
+            arrayList[from].add(new Node(to, w));
+        }
+
+        bfs(weights);
+
+        for (int i = 1; i < v + 1; i++) {
+
+            int weight = weights[i];
+
+            if (weight == Integer.MAX_VALUE) {
+                System.out.println("INF");
+            } else {
+                System.out.println(weight);
+            }
+        }
+    }
+
+    static void bfs(int[] weights) {
+
+        Queue<Integer> que = new LinkedList<>();
+        que.add(start);
+        boolean[] visited = new boolean[v + 1];
+        visited[start] = true;
+
+        while (!que.isEmpty()) {
+            Integer from = que.poll();
+
+            for (Node node : arrayList[from]) {
+                int nodeNum = node.getNode();
+                int weight = node.getWeight();
+
+                weights[nodeNum] = Math.min(weights[from] + weight, weights[nodeNum]);
             }
 
             int minIndex = 0;
             int minValue = Integer.MAX_VALUE;
-            for (int i = 1; i < result.length; i++) {
-                if (!visited[i] && result[i] < minValue) {
+            for (int i = 1; i < weights.length; i++) {
+                if (!visited[i] && weights[i] < minValue) {
                     minIndex = i;
-                    minValue = result[i];
+                    minValue = weights[i];
                 }
             }
 
@@ -73,27 +87,19 @@ public class Main {
                 visited[minIndex] = true;
             }
         }
-
-        for (int i = 1; i < result.length; i++) {
-            if (result[i] == Integer.MAX_VALUE) {
-                System.out.println("INF");
-            } else {
-                System.out.println(result[i]);
-            }
-        }
     }
 
     static class Node {
-        private int num;
+        private int node;
         private int weight;
 
-        public Node(int num, int weight) {
-            this.num = num;
+        public Node(int node, int weight) {
+            this.node = node;
             this.weight = weight;
         }
 
-        public int getNum() {
-            return num;
+        public int getNode() {
+            return node;
         }
 
         public int getWeight() {
