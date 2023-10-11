@@ -7,24 +7,27 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        final int LNF = Integer.MAX_VALUE;
+        int NOPE = Integer.MAX_VALUE - 100_000;
 
         int n = Integer.parseInt(br.readLine());
+        int[] cnt = new int[n + 1 + 6];
 
-        int[] dp = new int[n + 1 + 6];
-
-        dp[0] = LNF;
-        dp[1] = LNF;
-        dp[2] = 1;
-        dp[3] = LNF;
-        dp[4] = 2;
-        dp[5] = 1;
+        cnt[0] = NOPE;
+        cnt[1] = NOPE;
+        cnt[2] = 1;
+        cnt[3] = NOPE;
+        cnt[4] = 2;
+        cnt[5] = 1;
 
         for (int i = 6; i <= n; i++) {
-            dp[i] = Math.min(dp[i - 2], dp[i - 5]) + 1;
+
+            cnt[i] = Math.min(cnt[i - 2], cnt[i - 5]) + 1;
         }
 
-        System.out.println(dp[n] == LNF ? -1 : dp[n]);
-        br.close();
+        if (cnt[n] >= NOPE) {
+            System.out.println(-1);
+        } else {
+            System.out.println(cnt[n]);
+        }
     }
 }
