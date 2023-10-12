@@ -1,48 +1,51 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class Main {
 
-    private static int[][] map;
-    private static boolean[][] visited;
-
-    private static int N;
     private static int M;
+    private static int N;
+    private static int[][] farm;
+    private static boolean[][] visited;
+    private static int[] dx = {0, 1, 0, -1};
+    private static int[] dy = {-1, 0, 1, 0};
 
     public static void main(String[] args) throws IOException {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
         int T = Integer.parseInt(br.readLine());
+        StringTokenizer st;
 
-        for (int j = 0; j < T; j++) {
+        for (int l = 0; l < T; l++) {
 
-            StringTokenizer st = new StringTokenizer(br.readLine());
+            st = new StringTokenizer(br.readLine());
 
-            M = Integer.parseInt(st.nextToken()); // 배추밭의 가로길이
-            N = Integer.parseInt(st.nextToken()); // 배추밭의 세로길이
+            M = Integer.parseInt(st.nextToken()); // 가로 길이
+            N = Integer.parseInt(st.nextToken()); // 세로 길이
             int K = Integer.parseInt(st.nextToken()); // 배추가 심어져 있는 위치의 개수
 
-            map = new int[N][M];
+            farm = new int[N][M];
             visited = new boolean[N][M];
-            int result = 0;
 
-            for (int i = 0; i < K; i++) {
+            for (int k = 0; k < K; k++) {
                 st = new StringTokenizer(br.readLine());
+
                 int x = Integer.parseInt(st.nextToken());
                 int y = Integer.parseInt(st.nextToken());
 
-                map[y][x] = 1;
+                farm[y][x] = 1;
             }
 
+            int result = 0;
+
             for (int i = 0; i < N; i++) {
-                for (int k = 0; k < M; k++) {
-                    if (map[i][k] == 1 && !visited[i][k]) {
-                        dfs(new Pos(k, i));
+                for (int j = 0; j < M; j++) {
+
+                    if (!visited[i][j] && farm[i][j] == 1) {
+                        dfs(i, j);
                         result++;
                     }
                 }
@@ -52,54 +55,25 @@ public class Main {
         }
     }
 
-    private static void dfs(Pos pos) {
+    private static void dfs(int y, int x) {
 
-        Queue<Pos> que = new LinkedList<>();
+        if (farm[y][x] == 0) {
+            return;
+        }
 
-        int[] dx = new int[]{0, 1, 0, -1};
-        int[] dy = new int[]{1, 0, -1, 0};
+        visited[y][x] = true;
 
-        que.add(pos);
-        visited[pos.y][pos.x] = true;
+        for (int i = 0; i < dx.length; i++) {
+            int nextY = y + dy[i];
+            int nextX = x + dx[i];
 
-        while (que.size() != 0) {
-
-            Pos nPos = que.poll();
-
-            for (int i = 0; i < 4; i++) {
-                int nx = nPos.getX();
-                int ny = nPos.getY();
-
-                int tmpX = nx + dx[i];
-                int tmpY = ny + dy[i];
-
-                if (tmpX >= 0 && tmpX < M && tmpY >= 0 && tmpY < N) {
-
-                    if (!visited[tmpY][tmpX] && map[tmpY][tmpX] == 1) {
-                        que.add(new Pos(tmpX, tmpY));
-                        visited[tmpY][tmpX] = true;
-                    }
-                }
+            if (nextX < 0 || nextX >= M || nextY < 0 || nextY >= N) {
+                continue;
             }
-        }
-    }
 
-    private static class Pos {
-
-        private int x;
-        private int y;
-
-        public Pos(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        public int getX() {
-            return x;
-        }
-
-        public int getY() {
-            return y;
+            if (!visited[nextY][nextX] && farm[nextY][nextX] == 1) {
+                dfs(nextY, nextX);
+            }
         }
     }
 }
