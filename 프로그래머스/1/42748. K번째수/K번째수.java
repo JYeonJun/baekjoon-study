@@ -9,11 +9,7 @@ class Solution {
             int last = commands[i][1];
             int target = commands[i][2];
             
-            int[] tmp = new int[last - start + 1];
-            int index = 0;
-            for(int j = start - 1; j < last; j++) {
-                tmp[index++] = array[j];
-            }
+            int[] tmp = Arrays.copyOfRange(array, start - 1, last);
             
             Arrays.sort(tmp);
             
