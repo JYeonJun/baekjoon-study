@@ -1,7 +1,6 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
 public class Main {
@@ -11,10 +10,11 @@ public class Main {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
 
-        PriorityQueue<State> pq = new PriorityQueue<>();
-
         int N = Integer.parseInt(st.nextToken());
         int K = Integer.parseInt(st.nextToken());
+
+        Nation[] nations = new Nation[N];
+        Nation targetNation = new Nation();
 
         int num, gold, silver, bronze;
         for (int i = 0; i < N; i++) {
@@ -25,47 +25,52 @@ public class Main {
             silver = Integer.parseInt(st.nextToken());
             bronze = Integer.parseInt(st.nextToken());
 
-            pq.add(new State(num, gold, silver, bronze));
+            nations[i] = new Nation(num, gold, silver, bronze);
+            if (num == K) targetNation = nations[i];
         }
 
         int rank = 1;
-        boolean eq = false;
-        while (!pq.isEmpty()) {
-            State now = pq.poll();
-            if (now.num == K) {
-                System.out.println(rank);
-                break;
-            }
+        for (int i = 0; i < N; i++) {
 
-            if (!eq && now.eq) {
-                eq = true;
-            }
-
-            if (eq && now.eq) {
+            if (nations[i].num == K) {
                 continue;
-            }
+            } else {
+                if (targetNation.gold < nations[i].gold) {
+                    rank++;
+                }
 
-            if (eq && !now.eq) {
-                eq = false;
+                if ((targetNation.gold == nations[i].gold) && (targetNation.silver < nations[i].silver)) {
+                    rank++;
+                }
+
+                if ((targetNation.gold == nations[i].gold) && (targetNation.silver == nations[i].silver) && (
+                        targetNation.bronze < nations[i].bronze)) {
+
+                    rank++;
+                }
             }
-            rank++;
         }
+
+        System.out.println(rank);
+
+        br.close();
     }
 
-    private static class State implements Comparable<State>{
+    private static class Nation implements Comparable<Nation> {
         private int num, gold, silver, bronze;
-        private boolean eq;
 
-        public State(int num, int gold, int silver, int bronze) {
+        public Nation() {
+        }
+
+        public Nation(int num, int gold, int silver, int bronze) {
             this.num = num;
             this.gold = gold;
             this.silver = silver;
             this.bronze = bronze;
-            this.eq = false;
         }
 
         @Override
-        public int compareTo(State o) {
+        public int compareTo(Nation o) {
             if (this.gold != o.gold) {
                 return o.gold - this.gold;
             }
@@ -75,8 +80,6 @@ public class Main {
             if (this.bronze != o.bronze) {
                 return o.bronze - this.bronze;
             }
-
-            this.eq = true;
             return 0;
         }
     }
