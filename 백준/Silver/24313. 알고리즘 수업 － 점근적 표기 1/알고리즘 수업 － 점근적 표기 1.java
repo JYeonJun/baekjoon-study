@@ -11,14 +11,19 @@ public class Main {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-        a1 = Integer.parseInt(st.nextToken()); a0 = Integer.parseInt(st.nextToken());
-        c = Integer.parseInt(br.readLine()); n0 = Integer.parseInt(br.readLine());
+        a1 = Integer.parseInt(st.nextToken());
+        a0 = Integer.parseInt(st.nextToken());
+        c = Integer.parseInt(br.readLine());
+        n0 = Integer.parseInt(br.readLine());
 
-        int result = 1;
+        System.out.println(checkFunction() ? 1 : 0);
+    }
+
+    private static boolean checkFunction() {
         for (int i = n0; i <= 100; i++) {
-            if (f(i) > c * i) result = 0;
+            if (f(i) > c * i) return false;
         }
-        System.out.println(result);
+        return true;
     }
 
     private static int f(int n) {
