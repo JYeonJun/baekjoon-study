@@ -4,51 +4,52 @@ import java.io.InputStreamReader;
 
 public class Main {
 
+    private static final int ALPHA_COUNT = 26;
+    private static final int ASCII_A = 65;
+    private static int[] alphaFrequency = new int[ALPHA_COUNT];
+
     public static void main(String[] args) throws IOException {
-
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        char[] charArray = br.readLine().toCharArray();
 
-        String englishName = br.readLine();
-
-        int[] alpha = new int[26];
-
-        for (int i = 0; i < englishName.length(); i++) {
-            alpha[englishName.charAt(i)-65]++;
+        for (int i = 0; i < charArray.length; i++) {
+            alphaFrequency[charArray[i] - ASCII_A]++;
         }
 
-        int check = 0;
-        for (int i : alpha) {
-            if (i % 2 != 0) {
-                check++;
-            }
-        }
-
-        if (check > 1) {
+        if (isNope(charArray.length)) {
             System.out.println("I'm Sorry Hansoo");
             return;
         }
 
         StringBuilder sb = new StringBuilder();
-        String result = "";
-        for (int i = 0; i < alpha.length; i++) {
-            for (int j = 0; j < alpha[i] / 2; j++) {
-                sb.append((char) (i + 65));
-            }
+        for (int i = 0; i < ALPHA_COUNT; i++) {
+            sb.append(String.valueOf((char)(i + ASCII_A)).repeat(alphaFrequency[i] / 2));
         }
 
-        result += sb.toString();
-
+        String start = sb.toString();
         String end = sb.reverse().toString();
 
-        sb = new StringBuilder();
-        for (int i = 0; i < alpha.length; i++) {
-            if (alpha[i] % 2 != 0) {
-                sb.append((char) (i + 65));
+        sb.setLength(0);
+        for (int i = 0; i < ALPHA_COUNT; i++) {
+            if ((alphaFrequency[i] & 1) == 1) {
+                sb.append((char) (i + ASCII_A));
             }
         }
 
-        result += sb.toString() + end;
+        System.out.println(start + sb + end);
+    }
 
-        System.out.println(result);
+    private static boolean isNope(int len) {
+        return countOddFrequency() > 1;
+    }
+
+    private static int countOddFrequency() {
+        int count = 0;
+        for (int i = 0; i < ALPHA_COUNT; i++) {
+            if (alphaFrequency[i] % 2 == 1) {
+                count++;
+            }
+        }
+        return count;
     }
 }
