@@ -22,39 +22,39 @@ public class Main {
             int depth = 0;
             while (depth < N / 2 && depth < M / 2) {
 
-                int 좌하 = arr[N - depth - 1][depth];
-                int 우하 = arr[N - depth - 1][M - depth - 1];
-                int 우상 = arr[depth][M - depth - 1];
+                int bottomLeft = arr[N - depth - 1][depth];
+                int bottomRight = arr[N - depth - 1][M - depth - 1];
+                int topRight = arr[depth][M - depth - 1];
                 int tmp = arr[depth][depth];
                 for (int i = depth; i < N - depth - 1; i++) {
-                    int tmp2 = arr[i + 1][depth];
+                    int nextTmp = arr[i + 1][depth];
                     arr[i + 1][depth] = tmp;
-                    tmp = tmp2;
+                    tmp = nextTmp;
                 }
 
                 tmp = arr[N - depth - 1][depth + 1];
                 for (int j = depth + 1; j < M - depth - 1; j++) {
-                    int tmp2 = arr[N - depth - 1][j + 1];
+                    int nextTmp = arr[N - depth - 1][j + 1];
                     arr[N - depth - 1][j + 1] = tmp;
-                    tmp = tmp2;
+                    tmp = nextTmp;
                 }
-                arr[N - depth - 1][depth + 1] = 좌하;
+                arr[N - depth - 1][depth + 1] = bottomLeft;
 
                 tmp = arr[N - depth - 2][M - depth - 1];
                 for (int i = N - depth - 2; i > depth; i--) {
-                    int tmp2 = arr[i - 1][M - depth - 1];
+                    int nextTmp = arr[i - 1][M - depth - 1];
                     arr[i - 1][M - depth - 1] = tmp;
-                    tmp = tmp2;
+                    tmp = nextTmp;
                 }
-                arr[N - depth - 2][M - depth - 1] = 우하;
+                arr[N - depth - 2][M - depth - 1] = bottomRight;
 
                 tmp = arr[depth][M - depth - 2];
                 for (int j = M - depth - 2; j > depth; j--) {
-                    int tmp2 = arr[depth][j - 1];
+                    int nextTmp = arr[depth][j - 1];
                     arr[depth][j - 1] = tmp;
-                    tmp = tmp2;
+                    tmp = nextTmp;
                 }
-                arr[depth][M - depth - 2] = 우상;
+                arr[depth][M - depth - 2] = topRight;
 
                 depth++;
             }
