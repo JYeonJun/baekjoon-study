@@ -1,84 +1,59 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.PriorityQueue;
-import java.util.StringTokenizer;
 
 public class Main {
-
-    private static final int BOARD_LEN = 19;
-    private static final int[][] board = new int[BOARD_LEN + 1][BOARD_LEN + 1];
-    private static int[] dy = {0, 1, 1, 1}, dx = {1, 1, 0, -1}; // 우, 우하, 하, 좌하
-    private static final PriorityQueue<Pos> pq = new PriorityQueue<>();
+    private static final int n = 19;
+    private static int[][] a = new int[n][n];
+    private static int[] dx = new int[]{-1, 0, 1, 1}, dy = new int[]{1, 1, 1, 0}; // 왼쪽 아래 대각선, 아래, 오른쪽 아래 대각선, 오른쪽
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;
-        for (int i = 1; i <= BOARD_LEN; i++) {
-            st = new StringTokenizer(br.readLine());
-            for (int j = 1; j <= BOARD_LEN; j++) {
-                board[i][j] = Integer.parseInt(st.nextToken());
+        for (int i = 0; i < n; i++) {
+            String[] input = br.readLine().split(" ");
+            for (int j = 0; j < n; j++) {
+                a[i][j] = Integer.parseInt(input[j]);
             }
         }
 
-        for (int i = 1; i <= BOARD_LEN; i++) {
-            for (int j = 1; j <= BOARD_LEN; j++) {
-                if (board[i][j] == 0) {
-                    continue;
-                }
-                for (int k = 0; k < dy.length ; k++) {
-                    pq.clear();
-                    pq.add(new Pos(i, j));
-                    int ny = i + dy[k];
-                    int nx = j + dx[k];
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                int now = a[i][j];
+                if (now != 0) {
+                    for (int k = 0; k < 4; k++) {
+                        int count = 1;
+                        int nx = dx[k], ny = dy[k];
+                        if (isOutOfRange(i, j, nx, ny)) continue;
 
-                    if (isOutOfArrayIndex(ny, nx)) continue;
+                        while (a[i+nx][j+ny] == now) { // 조건: 같은 색깔일 때
+                            count++;
+                            // 같은 방향으로 계속 탐색
+                            nx += dx[k];
+                            ny += dy[k];
+                            if (count > 5) break; // 5개가 넘어가면 실패
+                            if (isOutOfRange(i, j, nx, ny)) break;
+                        }
 
-                    int omogCount = 1;
-                    while (board[ny][nx] == board[i][j]) {
-                        pq.add(new Pos(ny, nx));
-                        omogCount++;
-                        ny += dy[k];
-                        nx += dx[k];
-                        if (isOutOfArrayIndex(ny, nx)) break;
-                    }
+                        // 현재 위치: (i, j), 현재 방향: k
+                        // 바로 뒤의 위치에 같은 색깔이 존재하면 6개가 되니까 실패
+                        if (i-dx[k] >= 0 && i-dx[k] < n && j-dy[k] >= 0 && j-dy[k] < n) {
+                            if (a[i-dx[k]][j-dy[k]] == now) continue;
+                        }
 
-                    int preY = i - dy[k];
-                    int preX = j - dx[k];
-                    if (!isOutOfArrayIndex(preY, preX) && board[preY][preX] == board[i][j]) {
-                        continue;
-                    }
-                    if (omogCount == 5) {
-                        Pos pos = pq.poll();
-                        System.out.println(board[i][j]);
-                        System.out.println(pos.y + " " + pos.x);
-                        return;
+                        if (count == 5) {
+                            sb.append(now).append("\n").append(i+1).append(" ").append(j+1);
+                            System.out.println(sb.toString());
+                            return;
+                        }
                     }
                 }
             }
         }
-
         System.out.println(0);
     }
 
-    private static boolean isOutOfArrayIndex(int y, int x) {
-        return y <= 0 || y > BOARD_LEN || x <= 0 || x > BOARD_LEN;
-    }
-
-    private static class Pos implements Comparable<Pos>{
-        private int y, x;
-
-        public Pos(int y, int x) {
-            this.y = y;
-            this.x = x;
-        }
-
-        @Override
-        public int compareTo(Pos pos) {
-            if (this.x == pos.x) {
-                return this.y - pos.y;
-            }
-            return this.x - pos.x;
-        }
+    private static boolean isOutOfRange(int i, int j, int nx, int ny) {
+        return i + nx < 0 || i + nx >= n || j + ny < 0 || j + ny >= n;
     }
 }
