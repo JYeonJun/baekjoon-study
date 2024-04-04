@@ -9,21 +9,26 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        PriorityQueue<Integer> pq = new PriorityQueue<>((n1, n2) -> n2 - n1);
-        StringTokenizer st;
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        StringTokenizer st = null;
         int N = Integer.parseInt(br.readLine());
 
         for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
             while (st.hasMoreTokens()) {
-                pq.add(Integer.valueOf(st.nextToken()));
+                int num = Integer.parseInt(st.nextToken());
+                if (pq.size() == N) {
+                    if (pq.peek() < num) {
+                        pq.poll();
+                        pq.add(num);
+                    }
+                } else {
+                    pq.add(num);
+                }
             }
         }
 
-        for (int i = 0; i < N - 1; i++) {
-            pq.poll();
-        }
+        System.out.println(pq.poll());
 
-        System.out.println(pq.peek());
     }
 }
