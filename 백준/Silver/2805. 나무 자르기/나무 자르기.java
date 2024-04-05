@@ -1,0 +1,48 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.StringTokenizer;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        int N = Integer.parseInt(st.nextToken());
+        int M = Integer.parseInt(st.nextToken());
+        int[] trees = new int[N];
+
+        st = new StringTokenizer(br.readLine());
+        for (int i = 0; i < N; i++) {
+            trees[i] = Integer.parseInt(st.nextToken());
+        }
+
+        int start = 1, mid = 0, max = 0;
+        int end = Arrays.stream(trees).max().orElseThrow();
+        while (start <= end) {
+            mid = (start + end) / 2;
+
+            long sum = 0;
+            for (int i = 0; i < N; i++) {
+                int rest = trees[i] - mid;
+                if (rest > 0) {
+                    sum += rest;
+                }
+            }
+
+            if (sum == M) {
+                max = mid;
+                break;
+            }
+
+            if (sum > M) {
+                max = Math.max(max, mid);
+                start = mid + 1;
+            } else {
+                end = mid - 1;
+            }
+        }
+
+        System.out.println(max);
+    }
+}
