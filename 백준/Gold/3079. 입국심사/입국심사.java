@@ -7,8 +7,8 @@ public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-        long N = Long.parseLong(st.nextToken());
-        long M = Long.parseLong(st.nextToken());
+        int N = Integer.parseInt(st.nextToken());
+        int M = Integer.parseInt(st.nextToken());
         long[] times = new long[(int) N];
 
         long min = Long.MAX_VALUE;
@@ -17,7 +17,7 @@ public class Main {
             min = Math.min(min, times[i]);
         }
 
-        long start = min, end = min * M, mid = 0, sum = 0, result = Long.MAX_VALUE;
+        long start = min, end = min * M, mid = 0, sum = 0;
         while (start <= end) {
             mid = (start + end) / 2;
 
@@ -26,10 +26,10 @@ public class Main {
                 sum += mid / times[i];
             }
 
-            if (sum < M) {
-                start = mid + 1;
-            } else {
+            if (sum >= M) {
                 end = mid - 1;
+            } else {
+                start = mid + 1;
             }
         }
 
