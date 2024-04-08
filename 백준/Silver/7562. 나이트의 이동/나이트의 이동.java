@@ -7,73 +7,66 @@ import java.util.StringTokenizer;
 
 public class Main {
 
-    private static boolean[][] map;
-    private static int result, I;
-    private static Pos nPos, dPos;;
-    private static final int[] nextY = new int[]{-1, -2, -2, -1, 1, 2, 2, 1};
-    private static final int[] nextX = new int[]{-2, -1, 1, 2, 2, 1, -1, -2};
+    private static final int[] deltaY = {-2, -1, 1, 2, 2, 1, -1, -2};
+    private static final int[] deltaX = {1, 2, 2, 1, -1, -2, -2, -1};
+    private static boolean[][] visited;
+    private static int N;
 
     public static void main(String[] args) throws IOException {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;
         int T = Integer.parseInt(br.readLine());
+        StringBuilder sb = new StringBuilder();
+        while (T-- > 0) {
+            N = Integer.parseInt(br.readLine());
+            visited = new boolean[N][N];
 
-        for (int i = 0; i < T; i++) {
-            result = Integer.MAX_VALUE;
-            I = Integer.parseInt(br.readLine());
-            map = new boolean[I][I];
-            st = new StringTokenizer(br.readLine());
-            nPos = new Pos(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()), 0);
-            st = new StringTokenizer(br.readLine());
-            dPos = new Pos(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()), 0);
-            bfs(nPos);
-            System.out.println(result);
+            Position startPos = readPosition(br);
+            Position targetPos = readPosition(br);
+            sb.append(bfs(startPos, targetPos)).append("\n");
         }
+
+        System.out.println(sb);
     }
 
-    private static void bfs(Pos nPos) {
-        Queue<Pos> que = new LinkedList<>();
-        map[nPos.y][nPos.x] = true;
-        que.add(nPos);
+    private static int bfs(Position startPos, Position targetPos) {
+        Queue<Position> queue = new LinkedList<>();
+        queue.add(startPos);
+        visited[startPos.y][startPos.x] = true;
 
-        int dy = dPos.y;
-        int dx = dPos.x;
+        while (!queue.isEmpty()) {
+            Position currentPos = queue.poll();
 
-        while(!que.isEmpty()){
-            Pos pos = que.poll();
-            int y = pos.y;
-            int x = pos.x;
-            if (y == dy && x == dx) {
-                compare(pos.cnt);
-                continue;
+            if (currentPos.y == targetPos.y && currentPos.x == targetPos.x) {
+                return currentPos.moveCount;
             }
-            int tmpY, tmpX;
-            for (int i = 0; i < nextY.length; i++) {
-                tmpY = y + nextY[i];
-                tmpX = x + nextX[i];
 
-                if (tmpY < 0 || tmpY >= I || tmpX < 0 || tmpX >= I || map[tmpY][tmpX]) {
-                    continue;
+            for (int i = 0; i < deltaY.length; i++) {
+                int ny = currentPos.y + deltaY[i];
+                int nx = currentPos.x + deltaX[i];
+
+                if (ny >= 0 && ny < N && nx >= 0 && nx < N && !visited[ny][nx]) {
+                    queue.add(new Position(ny, nx, currentPos.moveCount + 1));
+                    visited[ny][nx] = true;
                 }
-
-                map[tmpY][tmpX] = true;
-                que.add(new Pos(tmpY, tmpX, pos.cnt + 1));
             }
         }
+
+        return -1; // 이론적으로 도달할 수 없는 코드
     }
 
-    private static void compare(int num) {
-        result = Math.min(result, num);
+    private static Position readPosition(BufferedReader br) throws IOException {
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        return new Position(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()), 0);
     }
 
-    private static class Pos {
-        private int x, y, cnt;
+    private static class Position {
+        private int y, x, moveCount;
 
-        public Pos(int y, int x, int cnt) {
-            this.x = x;
+        public Position(int y, int x, int moveCount) {
             this.y = y;
-            this.cnt = cnt;
+            this.x = x;
+            this.moveCount = moveCount;
         }
     }
 }
