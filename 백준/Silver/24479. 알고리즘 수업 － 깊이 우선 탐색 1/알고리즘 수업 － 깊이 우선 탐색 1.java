@@ -8,8 +8,7 @@ import java.util.StringTokenizer;
 public class Main {
 
     private static ArrayList<Integer>[] graph;
-    private static int[] result;
-    private static boolean[] visited;
+    private static int[] visited;
     private static int count = 1;
 
     public static void main(String[] args) throws IOException {
@@ -21,8 +20,7 @@ public class Main {
         int R = Integer.parseInt(st.nextToken());
 
         graph = new ArrayList[N + 1];
-        visited = new boolean[N + 1];
-        result = new int[N + 1];
+        visited = new int[N + 1];
 
         for (int i = 1; i <= N; i++) {
             graph[i] = new ArrayList<>();
@@ -40,24 +38,22 @@ public class Main {
             Collections.sort(graph[i]);
         }
 
-        visited[R] = true;
+        visited[R] = count++;
         dfs(R);
         StringBuilder sb = new StringBuilder();
         for (int i = 1; i <= N; i++) {
-            sb.append(result[i]).append("\n");
+            sb.append(visited[i]).append("\n");
         }
         System.out.println(sb);
     }
 
     private static void dfs(int start) {
-
-        result[start] = count++;
         ArrayList<Integer> vertexes = graph[start];
         for (int vertex : vertexes) {
-            if (visited[vertex]) {
+            if (visited[vertex] != 0) {
                 continue;
             }
-            visited[vertex] = true;
+            visited[vertex] = count++;
             dfs(vertex);
         }
     }
