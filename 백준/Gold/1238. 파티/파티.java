@@ -10,7 +10,7 @@ public class Main {
 
     private static final int INF = Integer.MAX_VALUE;
     private static ArrayList<Node>[] graph;
-    private static int N, M, X, result = Integer.MIN_VALUE;
+    private static int N, M, X, maxDistance = Integer.MIN_VALUE;
 
     public static void main(String[] args) throws IOException {
 
@@ -23,47 +23,50 @@ public class Main {
         initGraph(br);
 
         int[] distanceToX, distanceFromX;
-
         distanceFromX = new int[N + 1];
+        distanceToX = new int[N + 1];
+
+        // 파티하는 도시로부터 다른 도시로의 최적 루트 계산
         Arrays.fill(distanceFromX, INF);
         dijkstra(X, distanceFromX);
-        // 각 도시에서 X 도시로 가는 최단 거리 구하기(다익스트라) - 이거는 구할 때마다 결과 갱신하기
-        // ex) 1번 도시 사람은 (1 -> 2) + (2 -> 1)
+
+        // 각 도시로부터 파티 도시로 최적 루트 계산
         for (int i = 1; i <= N; i++) {
             if (i == X) {
                 continue;
             }
-            distanceToX = new int[N + 1];
             Arrays.fill(distanceToX, INF);
             dijkstra(i, distanceToX);
 
-            result = Math.max(result, distanceFromX[i] + distanceToX[X]);
+            // 결과값 갱신
+            maxDistance = Math.max(maxDistance, distanceFromX[i] + distanceToX[X]);
         }
-        System.out.println(result);
+        System.out.println(maxDistance);
     }
 
     private static void dijkstra(int from, int[] distance) {
         PriorityQueue<Node> pq = new PriorityQueue<>();
-//        boolean[] visited = new boolean[N + 1];
         pq.add(new Node(from, 0));
         distance[from] = 0;
 
         while (!pq.isEmpty()) {
             Node current = pq.poll();
             ArrayList<Node> nodes = graph[current.to];
-//            visited[current.to] = true;
 
             for (Node next : nodes) {
-//                if (visited[next.to]) {
-//                    continue;
-//                }
-
                 int nextWeight = distance[current.to] + next.weight;
                 if (distance[next.to] > nextWeight) {
                     distance[next.to] = nextWeight;
                     pq.add(next);
                 }
             }
+        }
+    }
+
+    private static void createGraph() {
+        graph = new ArrayList[N + 1];
+        for (int i = 1; i <= N; i++) {
+            graph[i] = new ArrayList<>();
         }
     }
 
@@ -76,13 +79,6 @@ public class Main {
             int weight = Integer.parseInt(st.nextToken());
 
             graph[from].add(new Node(to, weight));
-        }
-    }
-
-    private static void createGraph() {
-        graph = new ArrayList[N + 1];
-        for (int i = 1; i <= N; i++) {
-            graph[i] = new ArrayList<>();
         }
     }
 
