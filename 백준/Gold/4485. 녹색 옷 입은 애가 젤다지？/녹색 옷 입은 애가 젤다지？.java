@@ -38,7 +38,7 @@ public class Main {
             Node current = pq.poll();
             int cy = current.y;
             int cx = current.x;
-            int cw = current.weight;
+            if(cy == N - 1 && cx == N - 1) return;
 
             for (int i = 0; i < DY.length; i++) {
                 int ny = cy + DY[i];
