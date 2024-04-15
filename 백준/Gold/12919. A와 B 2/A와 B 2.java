@@ -8,55 +8,57 @@ public class Main {
     private static int result = 0;
 
     public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        S = new StringBuilder(br.readLine());
-        T = new StringBuilder(br.readLine());
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        S = new StringBuilder(reader.readLine());
+        T = new StringBuilder(reader.readLine());
 
-        dfs(T.length());
+        // 변환 가능성 판별 - 목표 문자열의 길이를 시작 깊이로 전달
+        transform(T.length());
         System.out.println(result);
     }
 
-    private static void dfs(int depth) {
-        if (depth == S.length()) {
-            if (T.compareTo(S) == 0) {
+    // 재귀
+    private static void transform(int depth) {
+        if (depth == S.length()) { // 만약 T 문자열의 길이가 S 문자열의 길이와 같다면, 두 문자열을 비교
+            if (T.toString().equals(S.toString())) {
                 result = 1;
             }
             return;
         }
 
+        // T 마지막 문자가 'A'라면, 제거하고 재귀 호출
         if (T.charAt(T.length() - 1) == 'A') {
-            // 1번 연산 ㄱㄱ
-            removeLastA();
-            // dfs
-            dfs(depth - 1);
-            // 1번 연산 해제
-            addA();
+            removeLastChar();
+            transform(depth - 1);
+            undoRemoveLastChar('A'); // 재귀 호출 후, 제거했던 'A' 추가
         }
+        // T 첫 문자가 'B'라면, 문자열을 뒤집고 마지막 문자를 제거한 후 재귀 호출
         if (T.charAt(0) == 'B') {
-            // 2번 연산 ㄱㄱ
-            removeBAndReverse();
-            // dfs
-            dfs(depth - 1);
-            // 2번 연산 해제
-            addBAndReverse();
+            reverseAndRemoveLastChar();
+            transform(depth - 1);
+            undoReverseAndRemoveLastChar('B'); // 재귀 호출 후, 원상복구
         }
     }
 
-    private static void addA() {
-        T.append("A");
-    }
-
-    private static void removeLastA() {
+    // T의 마지막 문자를 제거
+    private static void removeLastChar() {
         T.deleteCharAt(T.length() - 1);
     }
 
-    private static void addBAndReverse() {
-        T.append("B");
-        T.reverse();
+    // 제거했던 마지막 문자 복구
+    private static void undoRemoveLastChar(char charToAdd) {
+        T.append(charToAdd);
     }
 
-    private static void removeBAndReverse() {
+    // T를 뒤집고 마지막 문자 제거
+    private static void reverseAndRemoveLastChar() {
         T.reverse();
-        T.deleteCharAt(T.length() - 1);
+        removeLastChar();
+    }
+
+    // reverseAndRemoveLastChar 메소드에 의해 변경된 상태를 원상 복구
+    private static void undoReverseAndRemoveLastChar(char charToAdd) {
+        undoRemoveLastChar(charToAdd);
+        T.reverse();
     }
 }
