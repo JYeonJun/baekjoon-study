@@ -1,42 +1,44 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
+    private static int N, K;
+    private static int[] temps;
 
+    public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
 
-        int N = Integer.parseInt(st.nextToken());
-        int K = Integer.parseInt(st.nextToken());
-        int[] temp = new int[N];
+        N = Integer.parseInt(st.nextToken()); // 온도를 측정한 전체 날짜의 수
+        K = Integer.parseInt(st.nextToken()); // 합을 구하기 위한 연속적인 날짜의 수
 
-        st = new StringTokenizer(br.readLine());
-        for (int i = 0; i < N; i++) {
-            temp[i] = Integer.parseInt(st.nextToken());
-        }
+        initTemps(br);
 
-        int tmp = 0;
+        int maxSum = Integer.MIN_VALUE, sum = 0;
 
         for (int i = 0; i < K; i++) {
-            tmp += temp[i];
+            sum += temps[i];
         }
 
-        int max = tmp;
+        maxSum = Math.max(maxSum, sum);
 
-        for (int i = 1; i <= N - K; i++) {
+        for (int i = K; i < N; i++) {
+            sum -= temps[i - K];
+            sum += temps[i];
 
-            tmp -= temp[i - 1];
-            tmp += temp[i + K - 1];
-
-            if (tmp > max) {
-                max = tmp;
-            }
+            maxSum = Math.max(maxSum, sum);
         }
 
-        System.out.println(max);
+        System.out.println(maxSum);
+    }
+
+    private static void initTemps(BufferedReader br) throws IOException {
+        temps = new int[N];
+
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        for (int i = 0; i < N; i++) {
+            temps[i] = Integer.parseInt(st.nextToken());
+        }
     }
 }
