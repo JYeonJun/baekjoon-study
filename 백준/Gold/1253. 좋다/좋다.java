@@ -6,41 +6,40 @@ import java.util.StringTokenizer;
 
 public class Main {
 
+    private static int N;
+    private static int[] nums;
+
     public static void main(String[] args) throws IOException {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
-        int N = Integer.parseInt(br.readLine());
-        long[] arr = new long[N];
-        boolean[] check = new boolean[N];
-
+        N = Integer.parseInt(br.readLine());
+        nums = new int[N];
         StringTokenizer st = new StringTokenizer(br.readLine());
         for (int i = 0; i < N; i++) {
-            arr[i] = Integer.parseInt(st.nextToken());
+            nums[i] = Integer.parseInt(st.nextToken());
         }
 
-        Arrays.sort(arr);
+        Arrays.sort(nums);
 
-        int result = 0;
-
+        int answer = 0;
         for (int k = 0; k < N; k++) {
-            long find = arr[k];
+            int target = nums[k];
             int i = 0;
             int j = N - 1;
 
             while (i < j) {
-                long sum = arr[i] + arr[j];
+                int sum = nums[i] + nums[j];
 
-                if (sum == find) {
+                if (sum == target) {
                     if (i != k && j != k) {
-                        result++;
+                        answer++;
                         break;
                     } else if (i == k) {
                         i++;
                     } else if (j == k) {
                         j--;
                     }
-                } else if (arr[i] + arr[j] < find) {
+                } else if (sum < target) {
                     i++;
                 } else {
                     j--;
@@ -48,6 +47,6 @@ public class Main {
             }
         }
 
-        System.out.println(result);
+        System.out.println(answer);
     }
 }
