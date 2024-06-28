@@ -1,96 +1,77 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
 public class Main {
-
-    private static int N, M;
-    private static List<Node>[] graph, con;
+    private static int[] parent;
+    private static PriorityQueue<Node> pq;
 
     public static void main(String[] args) throws IOException {
-        init();
-        int sum = prim();
-        int tmp = 0;
-        for (int i = 1; i <= N; i++) {
-            if (con[i].size() == 1 || con[i].size() == 2) {
-                for (Node node : con[i]) {
-                    if (node.cost > tmp) {
-                        tmp = node.cost;
-                    }
-                }
-            }
-        }
-
-        System.out.println(sum - tmp);
-    }
-
-    private static int prim() {
-        boolean[] visited = new boolean[N + 1];
-        PriorityQueue<Node> pq = new PriorityQueue<>();
-        for (Node node : graph[1]) {
-            pq.add(node);
-        }
-        visited[1] = true;
-
-        int sum = 0;
-        while (!pq.isEmpty()) {
-            Node current = pq.poll();
-
-            if (visited[current.to]) {
-                continue;
-            }
-
-            visited[current.to] = true;
-            sum += current.cost;
-            for (Node node : graph[current.to]) {
-                pq.add(node);
-            }
-            con[current.from].add(current);
-            con[current.to].add(new Node(current.to, current.from, current.cost));
-        }
-
-        return sum;
-    }
-
-    private static void init() throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());
-        M = Integer.parseInt(st.nextToken());
+        int N = Integer.parseInt(st.nextToken());
+        int M = Integer.parseInt(st.nextToken());
+        pq = new PriorityQueue<>();
+        parent = new int[N + 1];
 
-        graph = new List[N + 1];
-        con = new List[N + 1];
         for (int i = 1; i <= N; i++) {
-            graph[i] = new ArrayList<>();
-            con[i] = new ArrayList<>();
+            parent[i] = i; // 유니온파인트 데이터 모두 자기 자신으로 초기
         }
 
         for (int i = 0; i < M; i++) {
             st = new StringTokenizer(br.readLine());
-            int from = Integer.parseInt(st.nextToken());
-            int to = Integer.parseInt(st.nextToken());
-            int cost = Integer.parseInt(st.nextToken());
-            graph[from].add(new Node(from, to, cost));
-            graph[to].add(new Node(to, from, cost));
+            int s = Integer.parseInt(st.nextToken());
+            int e = Integer.parseInt(st.nextToken());
+            int v = Integer.parseInt(st.nextToken());
+
+            pq.add(new Node(s, e, v));
+        }
+
+        int useEdge = 1;
+        int result = 0;
+
+        while (useEdge < N - 1) {
+            Node now = pq.poll();
+            if (find(now.s) != find(now.e)) {
+                union(now.s, now.e);
+                result = result + now.v;
+                useEdge++;
+            }
+        }
+
+        System.out.println(result);
+    }
+
+    private static void union(int a, int b) {
+        a = find(a);
+        b = find(b);
+        if(a != b) {
+            parent[b] = a;
+        }
+    }
+
+    private static int find(int a) {
+        if (a == parent[a]) {
+            return a;
+        } else {
+            return parent[a] = find(parent[a]);
         }
     }
 
     private static class Node implements Comparable<Node> {
-        private int from, to, cost;
+        private int s, e, v;
 
-        public Node(int from, int to, int cost) {
-            this.from = from;
-            this.to = to;
-            this.cost = cost;
+        public Node(int s, int e, int v) {
+            this.s = s;
+            this.e = e;
+            this.v = v;
         }
 
         @Override
         public int compareTo(Node o) {
-            return this.cost - o.cost;
+            return this.v - o.v;
         }
     }
 }
