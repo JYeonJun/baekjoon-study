@@ -4,6 +4,26 @@ import java.io.InputStreamReader;
 import java.util.Stack;
 import java.util.StringTokenizer;
 
+/*
+---------------------------------------------------
+1. 문제의 Input
+- N: 수열 A의 크기 (1 <= N <= 1,000,000)
+- 수열 A의 원소 (1 <= 먀 <= 1,000,000) - int 사용 가능
+
+2. 요구사항: 총 N개의 오큰 수 출력
+
+3. 알고리즘
+- 스택
+- 수를 저장하는 배열, 결과를 저장하는 배열
+- 스택에 있는 값과 현재값 비교하면서, 루프 돌기
+
+4. 제한시간: 1초
+- N ^ 2 > 1초 => 2중 반복문 X
+
+5. 엣지케이스
+ ---------------------------------------------------
+ */
+
 public class Main {
 
     public static void main(String[] args) throws IOException {
@@ -19,17 +39,13 @@ public class Main {
             nums[i] = Integer.parseInt(st.nextToken());
         }
 
-        for (int i = 0; i < N; i++) {
-            // 스택이 비어있지 않고, 현재 수열의 수가 스택의 top에 있는 인덱스의 수보다 클 때
+        for(int i = 0; i < N; i++) {
             while (!stack.isEmpty() && nums[stack.peek()] < nums[i]) {
-                // 오큰수를 ans 배열에 저장
                 ans[stack.pop()] = nums[i];
             }
-            // 인덱스를 스택에 저장
             stack.push(i);
         }
 
-        // 스택에 남아 있는 인덱스에 대해 오큰수가 없으므로 -1을 저장
         while (!stack.isEmpty()) {
             ans[stack.pop()] = -1;
         }
