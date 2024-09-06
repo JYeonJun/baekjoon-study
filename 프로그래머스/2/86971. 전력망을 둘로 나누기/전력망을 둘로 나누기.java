@@ -1,78 +1,79 @@
 import java.util.*;
 
-// 임의의 전선 하나 끊기
-// 전력망이 2개로 분할되었는지 검사 (BFS)
-// 결과 업데이트 (Math.min)
 class Solution {
-    private List<Integer>[] graph;
-    private boolean[] visited;
+    
+    private List<Integer>[] tree;
+    private int answer = Integer.MAX_VALUE;
+    
     public int solution(int n, int[][] wires) {
-        int answer = Integer.MAX_VALUE;
-        visited = new boolean[n + 1];
         
-        initGraph(n, wires); // 그래프 초기화
-        
-        for(int i = 0; i < wires.length; i++) {
-            int[] arr = wires[i]; // 끊을 전선 배열
-            
-            // 임의의 전선 하나 끊기
-            graph[arr[0]].remove(Integer.valueOf(arr[1]));
-            graph[arr[1]].remove(Integer.valueOf(arr[0]));
-            
-            // 전력망 개수 확인
-            Arrays.fill(visited, false);
-            int count = 0, num = 0;
-            for(int j = 1; j < n + 1; j++) {
-                if(!visited[j]) {
-                    num = bfs(j);
-                    count++;
-                }
-            }
-
-            if(count == 2) {
-                answer = Math.min(answer, Math.abs((n - num) - num));
-            }
-            
-            // 끊은 전력망 다시 복구
-            graph[arr[0]].add(arr[1]);
-            graph[arr[1]].add(arr[0]);
-        }
+        initTree(n, wires);
+        permutation(n, wires);
         
         return answer;
     }
     
-    private void initGraph(int n, int[][] wires) {
-        graph = new ArrayList[n + 1];
-        
-        for(int i = 1; i < n + 1; i++) {
-            graph[i] = new ArrayList<>();
-        }
-        
-        for(int[] arr : wires) {
-            graph[arr[0]].add(arr[1]);
-            graph[arr[1]].add(arr[0]);
+    private void permutation(int n, int[][] wires) {
+        for(int[] wire : wires) {
+            int from = wire[0];
+            int to = wire[1];
+            
+            tree[from].remove(Integer.valueOf(to));
+            tree[to].remove(Integer.valueOf(from));
+            countNetwork(n);
+            tree[from].add(Integer.valueOf(to));
+            tree[to].add(Integer.valueOf(from));
         }
     }
     
-    private int bfs(int start) {
-        Queue<Integer> que = new LinkedList<>();
-        que.add(start);
-        visited[start] = true;
+    private int countNetwork(int n) {
+        int networkCnt = 0;
+        boolean[] visited = new boolean[n + 1];
+        List<Integer> nums = new ArrayList<>();
+        for(int i = 1; i <= n; i++) {
+            if(!visited[i]) {
+                nums.add(bfs(i, visited));
+                networkCnt++;
+            }
+        }
         
-        int num = 0;
+        if(networkCnt == 2) { // 2개로 나뉘어진 경우
+            answer = Math.min(answer, Math.abs(nums.get(0) - nums.get(1)));
+        }
+        
+        return networkCnt;
+    }
+    
+    private int bfs(int num, boolean[] visited) {
+        Queue<Integer> que = new LinkedList<>();
+        visited[num] = true;
+        que.add(num);
+        int count = 1;
+        
         while(!que.isEmpty()) {
             int current = que.poll();
-            List<Integer> list = graph[current];
-            num++;
             
-            for(Integer next : list) {
+            for(int next : tree[current]) {
                 if(!visited[next]) {
-                    que.add(next);
                     visited[next] = true;
+                    que.add(next);
+                    count++;
                 }
             }
         }
         
-        return num;
+        return count;
+    }
+    
+    private void initTree(int n, int[][] wires) {
+        tree = new ArrayList[n + 1];
+        for(int i = 1; i <= n; i++) {
+            tree[i] = new ArrayList<>();
+        }
+        
+        for(int[] wire : wires) {
+            tree[wire[0]].add(wire[1]);
+            tree[wire[1]].add(wire[0]);
+        }
     }
 }
