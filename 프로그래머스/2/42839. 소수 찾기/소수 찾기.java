@@ -1,50 +1,53 @@
 import java.util.*;
 
 class Solution {
-    private Set<Integer> result = new HashSet<>();
-    private String[] arr;
-
+    
+    private int len;
+    private Set<Integer> answer = new HashSet<>();
+    
     public int solution(String numbers) {
-        arr = numbers.split("");
-
-        for (int i = 1; i <= arr.length; i++) {
-            permutation(new boolean[arr.length], new StringBuilder(), i);
+        
+        len = numbers.length();
+        
+        String[] numsString = numbers.split("");
+        int[] nums = new int[len];
+        for(int i = 0; i < len; i++) {
+            nums[i] = Integer.parseInt(numsString[i]);
         }
-
-        return result.size();
+        
+        backtrack(nums, new ArrayList<>(), 0, new boolean[len]);
+        
+        return answer.size();
     }
-
-    private void permutation(boolean[] visited, StringBuilder output, int n) {
-        if (output.length() == n) {
-            // 정수로 변환
-            String str = output.toString();
-            int num = Integer.parseInt(str);
-            // 소수인지 검사
-            // 소수라면 Set에 저장
-            if (isPrime(num)) {
-                result.add(num);
+    
+    private void backtrack(int[] nums, List<Integer> current, int depth, boolean[] visited) {
+        if(depth > 0 && depth <= len) {
+            StringBuilder num = new StringBuilder();
+            for(Integer n : current) {
+                num.append(n);
             }
-            return;
+            if(isPrime(Integer.parseInt(num.toString()))) {
+                answer.add(Integer.parseInt(num.toString()));
+            }
         }
-
-        for (int i = 0; i < arr.length; i++) {
-            if (!visited[i]) {
+        
+        for(int i = 0; i < len; i++) {
+            if(!visited[i]) {
+                current.add(nums[i]);
                 visited[i] = true;
-                output.append(arr[i]);
-                permutation(visited, output, n);
+                backtrack(nums, current, depth + 1, visited);
                 visited[i] = false;
-                output.deleteCharAt(output.length() - 1);  // 마지막에 추가된 문자 제거
+                current.remove(current.size() - 1);
             }
         }
     }
-
+    
     private boolean isPrime(int num) {
-        if (num < 2) return false;  // 0과 1은 소수가 아님
-
-        for (int i = 2; i <= Math.sqrt(num); i++) {
-            if (num % i == 0) return false;
+        if(num < 2) return false;
+        
+        for(int i = 2; i <= Math.sqrt(num); i++) {
+            if(num % i == 0) return false;
         }
-
         return true;
     }
 }
