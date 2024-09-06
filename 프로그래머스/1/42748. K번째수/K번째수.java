@@ -6,11 +6,10 @@ class Solution {
         
         for(int i = 0; i < commands.length; i++) {
             int start = commands[i][0];
-            int last = commands[i][1];
+            int end = commands[i][1];
             int target = commands[i][2];
             
-            int[] tmp = Arrays.copyOfRange(array, start - 1, last);
-            
+            int[] tmp = Arrays.copyOfRange(array, start - 1, end);
             Arrays.sort(tmp);
             
             answer[i] = tmp[target - 1];
